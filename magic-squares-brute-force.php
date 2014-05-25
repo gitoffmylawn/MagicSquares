@@ -5,140 +5,8 @@
  * Ryan O'Connell - 05/2014 
  */
 
-error_reporting( E_ALL );
-
-/*****
- * Magic Square Factory class
- *****/
-class MagicSquareFactory{
-    
-    public static function create(){
-        $magicFac = new MagicSquareFactory();
-        return new MagicSquare($magicFac->getPosts());
-    }
-    
-    public function getPosts(){
-        $magicArray = array();
-        if(isset($_POST['1'])){array_push($magicArray, $_POST['1']); }else{ array_push($magicArray, 0);}
-        if(isset($_POST['2'])){array_push($magicArray, $_POST['2']); }else{ array_push($magicArray, 0);}
-        if(isset($_POST['3'])){array_push($magicArray, $_POST['3']); }else{ array_push($magicArray, 0);}
-        if(isset($_POST['4'])){array_push($magicArray, $_POST['4']); }else{ array_push($magicArray, 0);}
-        if(isset($_POST['5'])){array_push($magicArray, $_POST['5']); }else{ array_push($magicArray, 0);}
-        if(isset($_POST['6'])){array_push($magicArray, $_POST['6']); }else{ array_push($magicArray, 0);}
-        if(isset($_POST['7'])){array_push($magicArray, $_POST['7']); }else{ array_push($magicArray, 0);}
-        if(isset($_POST['8'])){array_push($magicArray, $_POST['8']); }else{ array_push($magicArray, 0);}
-        if(isset($_POST['9'])){array_push($magicArray, $_POST['9']); }else{ array_push($magicArray, 0);}
-        return $magicArray;
-    }
-    
-}
-
-/*****
- * Magic Square Class
- *****/
-class MagicSquare {
-    
-    public $magicArray;
-    public $perm;
-    
-    public function __construct($array) {
-        $this->magicArray = $array;
-    }
-    
-    public function printArray() {
-        print_r($this->magicArray);
-    }
-    
-    public function hasDuplicates($array){
-        $duplicateArray = array();
-        foreach($array as $val){
-            foreach($duplicateArray as $d){
-                if($val === $d && $val !== ''){
-                    return true;
-                }
-            }
-            array_push($duplicateArray, $val);
-        }
-        return false;
-    }
-    
-    /*****
-     * Checks that no duplicate numbers exist
-     * Checks number range is 0 > x > 10
-     * Multiple 0's can exist
-     */
-    public function isChecked(){
-        foreach($this->magicArray as $a){
-            if($a > 9 || $a < 0){
-                return false;
-            }elseif($this->hasDuplicates($this->magicArray)){
-                return false;
-            }
-        }
-        return true;
-     }
-
-    /*****
-     * Checks to see if it matches input 
-     *****/    
-    public function isSolution($array){
-        $isSolution = false;
-        for($i = 0; $i < count($this->magicArray); $i++){
-            if($this->magicArray[$i] != ""){
-                if($this->magicArray[$i] == $array[$i]){
-                    $isSolution = true;
-                }else{
-                    return false;
-                }
-            }
-        }
-        //print_r($array); 
-        return $isSolution;
-    }
-    
-    /*****
-     * Checks to see if it is a magic square
-     *****/
-    public function isMagicSquare($array){
-        $isMagicSquare = false;
-        if($array[0] + $array[1] + $array[2] === 15 &&
-           $array[3] + $array[4] + $array[5] === 15 &&
-           $array[6] + $array[7] + $array[8] === 15 &&
-           $array[0] + $array[3] + $array[6] === 15 &&
-           $array[1] + $array[4] + $array[7] === 15 &&
-           $array[2] + $array[5] + $array[8] === 15){
-           $isMagicSquare = true;
-        }
-        return $isMagicSquare;
-    }
-    
-    /*****
-     * Modified from O'Reilly
-     *****/
-    public function pc_permute($items, $perms = array( )){
-        if(empty($items)){
-            if($this->isSolution($perms) && $this->isMagicSquare($perms)){ 
-                $this->perm = $perms;
-            }
-        }else{
-            for ($i = count($items) - 1; $i >= 0; --$i) {
-                $newitems = $items;
-                $newperms = $perms;
-                list($foo) = array_splice($newitems, $i, 1);
-                array_unshift($newperms, $foo);
-                $this->pc_permute($newitems, $newperms);
-            }
-        }
-        return $this->perm;
-    }
-
-    public function solve(){
-        $permutation = array(1,2,3,4,5,6,7,8,9);
-        $solution = $this->pc_permute($permutation);
-        return $solution;
-        //print_r($solution);
-    }
-}
+include_once('MagicSquareFactory.php');
+include_once('MagicSquare.php');
 
 $error = "";
 $solution = array();
@@ -151,6 +19,7 @@ if(isset($_POST['solve'])){
         if(empty($solution)){
             $error = "
             <li>No solution found.</li>
+            <li>Enter at least one value.</li>
             ";
         }
     }else{
